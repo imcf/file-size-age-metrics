@@ -1,0 +1,45 @@
+[tool.poetry]
+authors = ["Niko Ehrenfeuchter <nikolaus.ehrenfeuchter@unibas.ch>"]
+description = "Metrics collector and exporter to monitor file sizes and ages."
+include = [
+  "resources/fsa-metrics-wrapper.sh",
+]
+license = "GPL-3.0-or-later"
+name = "file-size-age-metrics"
+readme = "README.md"
+version = "0.0.0"
+
+homepage = "https://pypi.org/project/file-size-age-metrics/"
+keywords = ["prometheus", "metrics", "file-metrics"]
+repository = "https://github.com/imcf/file-size-age-metrics"
+
+[tool.poetry.urls]
+# "Changelog" = "https://github.com/imcf/file-size-age-metrics/blob/main/CHANGELOG.md"
+"Organisation Homepage" = "https://imcf.one/"
+
+[tool.poetry.dependencies]
+PyYAML = "^6.0"
+click = "^8.1.3"
+prometheus-client = "^0.15.0"
+python = "^3.9"
+
+[tool.poetry.group.dev.dependencies]
+black = "^22.10.0"
+pylint = "^2.15.5"
+
+[tool.poetry.scripts]
+fsa-metrics = "fsa_metrics.cli:run_fsa_exporter"
+
+[tool.poetry-dynamic-versioning]
+enable = true
+style = "semver"
+vcs = "git"
+
+[tool.poetry-dynamic-versioning.substitution]
+folders = [
+  {path = "src"},
+]
+
+[build-system]
+build-backend = "poetry_dynamic_versioning.backend"
+requires = ["poetry-core>=1.0.0", "poetry-dynamic-versioning"]
