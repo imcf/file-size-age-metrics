@@ -18,6 +18,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
       name: 📥 Checkout repo
+      with:
+        fetch-tags: true
 
     - name: 🐍 Set up Python
       uses: actions/setup-python@v5
