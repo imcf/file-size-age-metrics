@@ -85,6 +85,7 @@ class FileSizeAgeMetrics:
         # module about having details in a Box instead of a tuple...
         newest = oldest = biggest = smallest = None
 
+        # pylint: disable-msg = unsubscriptable-object
         for details in files_details:
             dirname, basename, ftype, size, age = details
             g_size.labels(ftype, pattern, dirname, basename).set(size)
