@@ -87,6 +87,9 @@ class FileSizeAgeMetrics:
 
         # pylint: disable-msg = unsubscriptable-object
         for details in files_details:
+            if not details:
+                continue
+
             dirname, basename, ftype, size, age = details
             g_size.labels(ftype, pattern, dirname, basename).set(size)
             g_age.labels(ftype, pattern, dirname, basename).set(age)

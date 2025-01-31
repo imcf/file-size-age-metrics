@@ -37,14 +37,19 @@ def get_file_details(filename):
     dirname = os.path.dirname(filename)
     basename = os.path.basename(filename)
     file_type = "other"
-    if os.path.isfile(filename):
-        file_type = "file"
-    elif os.path.isdir(filename):
-        file_type = "dir"
-    elif os.path.islink(filename):
-        file_type = "link"
-    size = os.path.getsize(filename)
-    age = time.time() - os.path.getmtime(filename)
+
+    try:
+        if os.path.isfile(filename):
+            file_type = "file"
+        elif os.path.isdir(filename):
+            file_type = "dir"
+        elif os.path.islink(filename):
+            file_type = "link"
+        size = os.path.getsize(filename)
+        age = time.time() - os.path.getmtime(filename)
+    except Exception as err:
+        log.warning(f"Unable to get details for [{filename}]: {err}")
+        return None
 
     return (dirname, basename, file_type, size, age)
 
