@@ -15,6 +15,7 @@ COLLECTOR_TIME = Summary(
 """Performance metric showing time spent for collecting data."""
 
 
+# TODO: consider putting the details in a Box object!
 def get_file_details(filename):
     """Collect details about the given file.
 

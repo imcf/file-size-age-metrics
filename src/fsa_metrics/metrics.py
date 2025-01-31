@@ -81,6 +81,8 @@ class FileSizeAgeMetrics:
         g_age = self.detail_gauges["age"]
         pattern = self._config.pattern
 
+        # not very elegant, potentially dangerous even - see the TODO in the collector
+        # module about having details in a Box instead of a tuple...
         newest = oldest = biggest = smallest = None
 
         for details in files_details:
