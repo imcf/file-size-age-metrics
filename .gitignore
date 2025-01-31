@@ -14,11 +14,12 @@ src/*.egg-info/
 /build/
 /dist/
 
-# documentation (auto-generated and build results)
-docs/build/
-
-# virtualenv
+# virtualenvs
 /.venv/
+/venv*/
 
 # generated HTML docs
 /htmldocs/
+
+# ignore playground files
+/playground/
