@@ -15,7 +15,7 @@ class FileSizeAgeMetrics:
         Parameters
         ----------
         config : box.Box
-            The metrics exporter configuration object.
+            The config as returned by `fsa_metrics.config.load_config_file`.
         """
         log.trace(f"Instantiating {self.__class__}...")
         self._config = config

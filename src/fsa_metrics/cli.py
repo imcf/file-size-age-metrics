@@ -30,7 +30,13 @@ def configure_logging(verbose: int):
 @click.command(help="Run the RLM metrics collector and exporter.")
 @click.option("--config", type=str, help="A YAML configuration file.", required=True)
 def run_fsa_exporter(config):
-    """Main CLI entry point for the exporter. Blocking."""
+    """Main CLI entry point for the exporter. Blocking.
+
+    Parameters
+    ----------
+    config : str
+        The path to a YAML config file.
+    """
     config = load_config_file(config)
     configure_logging(config.verbosity)
 
