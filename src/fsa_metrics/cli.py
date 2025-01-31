@@ -27,6 +27,7 @@ def configure_logging(verbose: int):
     log.info(f"Setting log level to [{mapping[verbose]}].")
 
 
+# TODO: implement a "print-example-config" command (and remove config from package)
 @click.command(help="Run the FSA metrics collector and exporter.")
 @click.option("--config", type=str, help="A YAML configuration file.", required=True)
 def run_fsa_exporter(config):
