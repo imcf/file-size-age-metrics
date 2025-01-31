@@ -40,5 +40,10 @@ The exporter running in foreground can be terminated as usual via `Ctrl+C`.
 
 FIXME!
 
+## Known limitations
+
+Currently only a single directory tree can be monitored. Adding support for
+monitoring several trees with a single process is planned though.
+
 [1]: https://prometheus.io/
 [3]: resources/config-example.yaml
