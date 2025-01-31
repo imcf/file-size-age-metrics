@@ -83,9 +83,8 @@ class FileSizeAgeMetrics:
 
         # not very elegant, potentially dangerous even - see the TODO in the collector
         # module about having details in a Box instead of a tuple...
-        newest = oldest = biggest = smallest = None
+        newest = oldest = biggest = smallest = files_details[0]
 
-        # pylint: disable-msg = unsubscriptable-object
         for details in files_details:
             if not details:
                 continue
