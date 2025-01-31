@@ -1,4 +1,4 @@
-name: 📤 Publish 🥁 release on PyPI using 🎭 Poetry
+name: 🚚🌍 Publish on 🎪 PyPI
 
 on:
 
@@ -33,7 +33,7 @@ jobs:
     # The key configuration value here is `virtualenvs-in-project: true`: this
     # creates the venv as a `.venv` in your testing directory, which allows
     # the next step to easily cache it.
-    - name: 🧰 Install Poetry
+    - name: 🔩🔧 Install 🎭 Poetry
       uses: snok/install-poetry@v1
       with:
         version: 1.8.2
@@ -48,20 +48,20 @@ jobs:
         path: .venv
         key: pydeps-${{ hashFiles('**/poetry.lock') }}
 
-    - name: 🛠 Install Poetry dynamic-versioning 🔌 plugin
+    - name: 🎭 Install Poetry dynamic-versioning 🔌 plugin
       run: poetry self add "poetry-dynamic-versioning[plugin]"
 
     # Install dependencies. `--no-root` means "install all dependencies but
     # not the project itself", which is what you want to avoid caching _your_
     # code. The `if` statement ensures this only runs on a cache miss.
-    - name: 🏗 Install 🧾 Dependencies
+    - name: 🎭 Install 🧾 Dependencies
       run: poetry install --no-interaction --no-root
       if: steps.cache-deps.outputs.cache-hit != 'true'
 
-    - name: 🏗 Install 🛖 project
+    - name: 🎭 Install 🛖 project
       run: poetry install --no-interaction
 
-    - name: 👷 Build 🧱 project
+    - name: 🎭👷 Build 🧱 project
       run: poetry build
 
     - name: 📤 Upload build artifacts
