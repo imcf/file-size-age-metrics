@@ -27,7 +27,7 @@ def configure_logging(verbose: int):
     log.info(f"Setting log level to [{mapping[verbose]}].")
 
 
-@click.command(help="Run the RLM metrics collector and exporter.")
+@click.command(help="Run the FSA metrics collector and exporter.")
 @click.option("--config", type=str, help="A YAML configuration file.", required=True)
 def run_fsa_exporter(config):
     """Main CLI entry point for the exporter. Blocking.

@@ -93,7 +93,7 @@ class FSACollector:
         log.debug(f"Using FSA dir: [{self.fsa_dir}]")
 
     def collect(self):
-        """Request metrics from RLM and parse them into a dataframe.
+        """Scan the directory tree and collect the file metrics.
 
         Returns
         -------
