@@ -1,0 +1,11 @@
+### port to serve the metrics:
+port: 16061
+### collector interval in seconds:
+interval: 60
+### logging verbosity: 0=warning, 1=success, 2=info, 3=debug, 4=trace
+verbosity: 1
+
+### root path to scan for files:
+fsa_dir: "/var/backups/"
+### pattern (python-glob) to match the filenames against:
+pattern: "**"

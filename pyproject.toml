@@ -30,6 +30,7 @@ python-box = "^7.3.2"
 [tool.poetry.group.dev.dependencies]
 black = "^22.10.0"
 pylint = "^2.15.5"
+pdoc = "^15.0.1"
 
 [tool.poetry.scripts]
 fsa-metrics = "fsa_metrics.cli:run_fsa_exporter"

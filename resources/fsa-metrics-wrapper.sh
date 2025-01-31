@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# FIXME FIXME FIXME
+echo "ERROR: needs refactorig!"
+exit 1
+
 export FSA_DIR=/export01/postgresql/backup/
 export FSA_PATTERN="**"
 

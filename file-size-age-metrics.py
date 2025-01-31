@@ -31,9 +31,9 @@ class MetricsRequestHandler(http.server.SimpleHTTPRequestHandler):
         ]
         files_details.sort(key=lambda x: x[2], reverse=True)
 
-        html = "# HELP file_size The size of the file in bytes "
-        html += f"(path=[{DIR}], pattern=[{FILE_PATTERN}]\n"
-        html += "# TYPE file_size gauge\n"
+        fsa_size = "# HELP fsa_size_bytes The size of the file in bytes "
+        fsa_size += f"(path=[{DIR}], pattern=[{FILE_PATTERN}]\n"
+        fsa_size += "# TYPE fsa_size_bytes gauge\n"
 
         for fname, size, mtime, age in files_details:
             mtime = datetime.fromtimestamp(mtime)
@@ -52,8 +52,11 @@ class MetricsRequestHandler(http.server.SimpleHTTPRequestHandler):
             elif mtime.date() == datetime.today().date() - timedelta(days=1):
                 age_range = "yesterday"
 
-            html += f'file_size{{name="{fname}", date="{mtime}", age="{age}", '
-            html += f'age_range="{age_range}"}} {size}\n'
+            fsa_size += f'fsa_size_bytes{{name="{fname}"}} {size}\n'
+            # fsa_size += f'file_size{{name="{fname}", date="{mtime}", age="{age}", '
+            # fsa_size += f'age_range="{age_range}"}} {size}\n'
+
+        html = fsa_size
         self.wfile.write(bytes(html, "utf8"))
 
 

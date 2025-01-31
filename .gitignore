@@ -1,0 +1,25 @@
+/.vscode/
+*.code-workspace
+/*sandbox*.py
+/config*.yaml
+
+# testing
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Python bytecode, eggs, build and dist, ...
+*.pyc
+src/*.egg-info/
+/build/
+/dist/
+
+# virtualenvs
+/.venv/
+/venv*/
+
+# generated HTML docs
+/htmldocs/
+
+# ignore playground files
+/playground/
