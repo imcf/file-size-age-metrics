@@ -45,5 +45,16 @@ FIXME!
 Currently only a single directory tree can be monitored. Adding support for
 monitoring several trees with a single process is planned though.
 
+## Scalability and resource usage considerations
+
+The exporter is designed with code simplicity as a goal, it's _not_ optimized
+for efficiency or low resource usage. A few numbers on an average laptop running
+the exporter on a rather large file tree (not recommended, just for
+demonstration purposes):
+
+- Number of files monitored: ~200'000
+- Memory consumption: ~350 MB
+- Metrics collection duration: < 10s
+
 [1]: https://prometheus.io/
 [3]: resources/config-example.yaml
