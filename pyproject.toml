@@ -9,6 +9,8 @@ name = "file-size-age-metrics"
 readme = "README.md"
 version = "0.0.0"
 
+packages = [{include = "fsa_metrics", from = "src"}]
+
 homepage = "https://pypi.org/project/file-size-age-metrics/"
 keywords = ["prometheus", "metrics", "file-metrics"]
 repository = "https://github.com/imcf/file-size-age-metrics"
