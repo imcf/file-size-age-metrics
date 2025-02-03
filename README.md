@@ -53,7 +53,7 @@ file, specifying where to find your configuration file for the service:
 ```text
 [Service]
 ### configuration file for the FSA exporter service:
-Environment=FSA_CONFIG=/opt/fsa-metrics.yaml
+Environment=FSA_CONFIG=/etc/fsa-metrics.yaml
 ```
 
 Note: on *Ubuntu 20.04* the `systemct edit` command will present you with an
