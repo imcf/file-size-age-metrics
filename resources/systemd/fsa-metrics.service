@@ -1,0 +1,20 @@
+### systemd unit file for the File Size and Age metrics exporter service
+
+[Unit]
+Description=Prometheus collector and exporter for File Size and Age metrics
+
+[Service]
+ExecStart=/opt/fsa-metrics/bin/fsa-metrics
+Type=simple
+User=fsaexporter
+Restart=on-failure
+### disable output buffering, messages should appear directly in systemd's logs:
+Environment=PYTHONUNBUFFERED=1
+
+### /!\ Required for running the service, override or adjust here: /!\
+# Environment=FSA_CONFIG=ADJUST_ME
+
+[Install]
+### start the service when the system boots (assuming the service is enabled):
+WantedBy=default.target
+

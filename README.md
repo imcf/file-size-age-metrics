@@ -39,7 +39,43 @@ The exporter running in foreground can be terminated as usual via `Ctrl+C`.
 
 ## 👟 Running as a service 👟
 
-FIXME!
+```bash
+adduser --system fsaexporter
+cp -v /opt/fsa-metrics/lib/python*/site-packages/resources/systemd/fsa-metrics.service  /etc/systemd/system/
+systemctl daemon-reload
+systemctl edit fsa-metrics.service
+```
+
+The last command will open an editor with the override configuration of the
+service's unit file. Add a section like this **at the top** of the override
+file, specifying where to find your configuration file for the service:
+
+```text
+[Service]
+### configuration file for the FSA exporter service:
+Environment=FSA_CONFIG=/opt/fsa-metrics.yaml
+```
+
+Note: on *Ubuntu 20.04* the `systemct edit` command will present you with an
+empty file, so you will have to copy the respective lines from below or the
+provided *central* unit file.
+
+Finally enable the service and start it right away. The second line will show
+the log messages on the console until `Ctrl+C` is pressed. This way you should
+be able to tell if the service has started up properly and is providing metrics
+on the configured port:
+
+```bash
+systemctl enable --now fsa-metrics.service
+journalctl --follow --unit fsa-metrics
+```
+
+Open ports for the `fsa-metrics` exporter:
+
+```bash
+SOURCE="any"  # <-- put an IP address here to restrict access more
+ufw allow from $SOURCE to any port fsa-metrics
+```
 
 ## Known limitations
 
@@ -48,7 +84,7 @@ monitoring several trees with a single process is planned though.
 
 ## Scalability and resource usage considerations
 
-The exporter is designed with code simplicity as a goal, it's _not_ optimized
+The exporter is designed with code simplicity as a goal, it's *not* optimized
 for efficiency or low resource usage. A few numbers on an average laptop running
 the exporter on a rather large file tree (not recommended, just for
 demonstration purposes):
