@@ -8,6 +8,12 @@ def load_config_file(filename):
 
     Values that are not provided in the file will be filled with built-in defaults.
 
+    Parameters
+    ----------
+    filename : str
+        The path to a YAML file containing the configuration to parse. If `filename` is
+        empty, a config object with the default settings will be created.
+
     Returns
     -------
     box.Box
@@ -19,7 +25,11 @@ def load_config_file(filename):
         - `fsa_dir` (str) : the path to scan for files [`/var/backups`]
         - `pattern` (str) : a glob pattern for matching filenames [`**`]
     """
-    config = Box.from_yaml(filename=filename)
+    if not filename:
+        config = Box({})
+    else:
+        config = Box.from_yaml(filename=filename)
+
     if "port" not in config.keys():
         config.port = "16061"
     if "fsa_dir" not in config.keys():
