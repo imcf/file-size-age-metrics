@@ -27,10 +27,16 @@ def configure_logging(verbose: int):
     log.info(f"Setting log level to [{mapping[verbose]}].")
 
 
-# TODO: implement a "print-example-config" command (and remove config from package)
 @click.command(help="Run the FSA metrics collector and exporter.")
-@click.option("--config", type=str, help="A YAML configuration file.", required=True)
-def run_fsa_exporter(config):
+@click.option(
+    "--config",
+    "conffile",
+    required=True,
+    help="""Path to a YAML configuration file. Use the pseudo filename
+    'SHOWCONFIGDEFAULTS' to print the format and default values.""",
+    envvar="FSA_CONFIG",
+)
+def run_fsa_exporter(conffile):
     """Main CLI entry point for the exporter. Blocking.
 
     Parameters
@@ -38,7 +44,15 @@ def run_fsa_exporter(config):
     config : str
         The path to a YAML config file.
     """
-    config = load_config_file(config)
+    if conffile == "SHOWCONFIGDEFAULTS":
+        config = load_config_file(None)
+        with click.get_current_context() as ctx:
+            click.echo(ctx.get_help())
+            click.echo("\n\n== EXAMPLE CONFIGURATION FILE ==\n")
+            click.echo(f"# ---\n{config.to_yaml()}# ---\n")
+            sys.exit(0)
+
+    config = load_config_file(conffile)
     configure_logging(config.verbosity)
 
     start_http_server(config.port)

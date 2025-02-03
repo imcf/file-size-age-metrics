@@ -28,7 +28,8 @@ environment.
 
 A configuration file is required for running the metrics exporter. Simply copy
 the [config-example.yaml][3] file to e.g. `config.yaml` and adjust the settings
-there. Then run the exporter like this:
+there (alternatively, call `fsa-metrics --config SHOWCONFIGDEFAULTS` to have a
+configuration example printed to stdout). Then run the exporter like this:
 
 ```bash
 fsa-metrics --config config.yaml
