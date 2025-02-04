@@ -104,6 +104,8 @@ cp -v "$SITE_PKGS/resources/config-example.yaml" "$VENV_PATH/fsa-metrics.yaml"
 cp -v "$SITE_PKGS/resources/run-metrics-exporter.sh" "$VENV_PATH/bin/"
 ```
 
+Obviously you also want to adapt the settings in the `.yaml` config file.
+
 Now the wrapper can be put into a cron-job (`crontab -e`) that e.g. executes
 once a minute and it will take care to only launch a new instance of the metrics
 exporter if none is running. For example:
