@@ -4,6 +4,8 @@
 
 [Prometheus][1] exporter providing size and age metrics about files.
 
+![FSA Metrics Grafana Demo Panel][fsa_panel]
+
 ## ⚙🔧 Installation ⚙🔧
 
 Example installation on Debian / Ubuntu:
@@ -114,6 +116,16 @@ exporter if none is running. For example:
 * * * * *  $HOME/.venvs/fsa-metrics/bin/run-metrics-exporter.sh
 ```
 
+## Visualization in Grafana
+
+To visualize data in a way as shown in the example panel above, queries like
+the following ones may be used:
+
+```text
+sort(fsa_age_seconds{instance="pg_server.example.xy"})
+sort(fsa_size_bytes{instance="pg_server.example.xy"})
+```
+
 ## Known limitations
 
 Currently only a single directory tree can be monitored. Adding support for
@@ -135,3 +147,4 @@ demonstration purposes):
 
 [poetry]: https://python-poetry.org/
 [badge_poetry]: https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json
+[fsa_panel]: https://imcf.one/images/fsa-metrics-demo-panel.png
