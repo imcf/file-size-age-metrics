@@ -1,5 +1,7 @@
 # 📐 ⏱ 🧮 File-Size-Age Metrics Exporter
 
+[![Poetry][badge_poetry]][poetry]
+
 [Prometheus][1] exporter providing size and age metrics about files.
 
 ## ⚙🔧 Installation ⚙🔧
@@ -106,3 +108,6 @@ demonstration purposes):
 
 [1]: https://prometheus.io/
 [3]: resources/config-example.yaml
+
+[poetry]: https://python-poetry.org/
+[badge_poetry]: https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json
