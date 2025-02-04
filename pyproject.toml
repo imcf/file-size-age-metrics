@@ -3,6 +3,7 @@ authors = ["Niko Ehrenfeuchter <nikolaus.ehrenfeuchter@unibas.ch>"]
 description = "Metrics collector and exporter to monitor file sizes and ages."
 include = [
    { path = "resources/run-metrics-exporter.sh", format = ["sdist", "wheel"] },
+   { path = "resources/config-example.yaml", format = ["sdist", "wheel"] },
    { path = "resources/systemd/fsa-metrics.service", format = ["sdist", "wheel"] },
 ]
 license = "GPL-3.0-or-later"
