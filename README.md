@@ -90,6 +90,28 @@ The wrapper script assumes the `fsa-metrics` venv will be placed in
 `$HOME/.virtualenvs/`, if that's not the case the path prefix in the script
 requires to be adjusted.
 
+```bash
+mkdir -pv "$HOME/.virtualenvs"
+VENV_PATH="$HOME/.virtualenvs/fsa-metrics"
+python3 -m venv "$VENV_PATH"
+"$VENV_PATH/bin/pip" install --upgrade pip
+"$VENV_PATH/bin/pip" install file-size-age-metrics
+SITE_PKGS=$("$VENV_PATH/bin/pip" show file-size-age-metrics |
+    grep '^Location: ' |
+    cut -d ' ' -f 2
+)
+cp -v "$SITE_PKGS/resources/config-example.yaml" "$VENV_PATH/fsa-metrics.yaml"
+cp -v "$SITE_PKGS/resources/run-metrics-exporter.sh" "$VENV_PATH/bin/"
+```
+
+Now the wrapper can be put into a cron-job (`crontab -e`) that e.g. executes
+once a minute and it will take care to only launch a new instance of the metrics
+exporter if none is running. For example:
+
+```cron
+* * * * *  $HOME/.virtualenvs/fsa-metrics/bin/run-metrics-exporter.sh
+```
+
 ## Known limitations
 
 Currently only a single directory tree can be monitored. Adding support for
