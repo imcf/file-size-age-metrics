@@ -45,7 +45,13 @@ The exporter running in foreground can be terminated as usual via `Ctrl+C`.
 
 ```bash
 adduser --system fsaexporter
-cp -v /opt/fsa-metrics/lib/python*/site-packages/resources/systemd/fsa-metrics.service  /etc/systemd/system/
+SITE_PKGS=$(/opt/fsa-metrics/bin/pip show file-size-age-metrics |
+    grep '^Location: ' |
+    cut -d ' ' -f 2
+)
+cp -v "$SITE_PKGS"/resources/systemd/fsa-metrics.service  /etc/systemd/system/
+cp -v "$SITE_PKGS"/resources/config-example.yaml  /etc/fsa-metrics.yaml
+vim /etc/fsa-metrics.yaml  # <- adapt settings to your requirements
 systemctl daemon-reload
 systemctl edit fsa-metrics.service
 ```
