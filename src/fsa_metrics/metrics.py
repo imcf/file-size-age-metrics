@@ -37,23 +37,43 @@ class FileSizeAgeMetrics:
         """A dict of gauges for the individual files metrics."""
 
         self.summary_gauges = {
-            "oldest": Gauge(
-                name="fsa_age_oldest_seconds",
+            "oldest_age": Gauge(
+                name="fsa_oldest_age_seconds",
                 documentation="age of the OLDEST file in the tree in seconds",
                 labelnames=["type", "pattern", "path", "name"],
             ),
-            "newest": Gauge(
-                name="fsa_age_newest_seconds",
+            "oldest_size": Gauge(
+                name="fsa_oldest_size_bytes",
+                documentation="size of the OLDEST file in the tree in bytes",
+                labelnames=["type", "pattern", "path", "name"],
+            ),
+            "newest_age": Gauge(
+                name="fsa_newest_age_seconds",
                 documentation="age of the NEWEST file in the tree in seconds",
                 labelnames=["type", "pattern", "path", "name"],
             ),
-            "biggest": Gauge(
-                name="fsa_size_biggest_bytes",
+            "newest_size": Gauge(
+                name="fsa_newest_size_bytes",
+                documentation="size of the NEWEST file in the tree in bytes",
+                labelnames=["type", "pattern", "path", "name"],
+            ),
+            "biggest_age": Gauge(
+                name="fsa_biggest_age_seconds",
+                documentation="age of the BIGGEST file in the tree in seconds",
+                labelnames=["type", "pattern", "path", "name"],
+            ),
+            "biggest_size": Gauge(
+                name="fsa_biggest_size_bytes",
                 documentation="size of the BIGGEST file in the tree in bytes",
                 labelnames=["type", "pattern", "path", "name"],
             ),
-            "smallest": Gauge(
-                name="fsa_size_smallest_bytes",
+            "smallest_age": Gauge(
+                name="fsa_smallest_age_seconds",
+                documentation="age of the SMALLEST file in the tree in seconds",
+                labelnames=["type", "pattern", "path", "name"],
+            ),
+            "smallest_size": Gauge(
+                name="fsa_smallest_size_bytes",
                 documentation="size of the SMALLEST file in the tree in bytes",
                 labelnames=["type", "pattern", "path", "name"],
             ),
@@ -118,9 +138,11 @@ class FileSizeAgeMetrics:
         """
         # log.trace(f"Updating '{name}' summary gauge: {details}")
         dirname, basename, ftype, size, age = details
-        value = age
-        if name in ["smallest", "biggest"]:
-            value = size
-        gauge = self.summary_gauges[name]
-        gauge.clear()
-        gauge.labels(ftype, self._config.pattern, dirname, basename).set(value)
+
+        gauge_size = self.summary_gauges[f"{name}_size"]
+        gauge_size.clear()
+        gauge_size.labels(ftype, self._config.pattern, dirname, basename).set(size)
+
+        gauge_age = self.summary_gauges[f"{name}_age"]
+        gauge_age.clear()
+        gauge_age.labels(ftype, self._config.pattern, dirname, basename).set(age)
