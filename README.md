@@ -77,6 +77,17 @@ SOURCE="any"  # <-- put an IP address here to restrict access more
 ufw allow from $SOURCE to any port fsa-metrics
 ```
 
+## 🪂 Running via cron ⏰
+
+In case you need the metrics exporter on a system where you are lacking
+administrative privileges, running the exporter in kind of a
+*poor-man's'service* approach through `cron` using a wrapper script is
+absolutely feasible!
+
+The wrapper script assumes the `fsa-metrics` venv will be placed in
+`$HOME/.virtualenvs/`, if that's not the case the path prefix in the script
+requires to be adjusted.
+
 ## Known limitations
 
 Currently only a single directory tree can be monitored. Adding support for
