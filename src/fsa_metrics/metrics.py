@@ -78,7 +78,7 @@ class FileSizeAgeMetrics:
                 labelnames=["type", "pattern", "path", "name"],
             ),
         }
-        """A dict of summary gauges, used to hold min / max details."""
+        """Summary gauges for oldest / newest / smallest / biggest details."""
 
         log.trace(f"Finished instantiating {self.__class__}.")
 
