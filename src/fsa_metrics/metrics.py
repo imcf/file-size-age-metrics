@@ -26,39 +26,59 @@ class FileSizeAgeMetrics:
             "size": Gauge(
                 name="fsa_size_bytes",
                 documentation="size of the file in bytes",
-                labelnames=["type", "pattern", "path", "name"],
+                labelnames=["type", "pattern", "path", "name", "parent"],
             ),
             "age": Gauge(
                 name="fsa_age_seconds",
                 documentation="age of the file in seconds",
-                labelnames=["type", "pattern", "path", "name"],
+                labelnames=["type", "pattern", "path", "name", "parent"],
             ),
         }
         """A dict of gauges for the individual files metrics."""
 
         self.summary_gauges = {
-            "oldest": Gauge(
-                name="fsa_age_oldest_seconds",
+            "oldest_age": Gauge(
+                name="fsa_oldest_age_seconds",
                 documentation="age of the OLDEST file in the tree in seconds",
-                labelnames=["type", "pattern", "path", "name"],
+                labelnames=["type", "pattern", "path", "name", "parent"],
             ),
-            "newest": Gauge(
-                name="fsa_age_newest_seconds",
+            "oldest_size": Gauge(
+                name="fsa_oldest_size_bytes",
+                documentation="size of the OLDEST file in the tree in bytes",
+                labelnames=["type", "pattern", "path", "name", "parent"],
+            ),
+            "newest_age": Gauge(
+                name="fsa_newest_age_seconds",
                 documentation="age of the NEWEST file in the tree in seconds",
-                labelnames=["type", "pattern", "path", "name"],
+                labelnames=["type", "pattern", "path", "name", "parent"],
             ),
-            "biggest": Gauge(
-                name="fsa_size_biggest_bytes",
+            "newest_size": Gauge(
+                name="fsa_newest_size_bytes",
+                documentation="size of the NEWEST file in the tree in bytes",
+                labelnames=["type", "pattern", "path", "name", "parent"],
+            ),
+            "biggest_age": Gauge(
+                name="fsa_biggest_age_seconds",
+                documentation="age of the BIGGEST file in the tree in seconds",
+                labelnames=["type", "pattern", "path", "name", "parent"],
+            ),
+            "biggest_size": Gauge(
+                name="fsa_biggest_size_bytes",
                 documentation="size of the BIGGEST file in the tree in bytes",
-                labelnames=["type", "pattern", "path", "name"],
+                labelnames=["type", "pattern", "path", "name", "parent"],
             ),
-            "smallest": Gauge(
-                name="fsa_size_smallest_bytes",
+            "smallest_age": Gauge(
+                name="fsa_smallest_age_seconds",
+                documentation="age of the SMALLEST file in the tree in seconds",
+                labelnames=["type", "pattern", "path", "name", "parent"],
+            ),
+            "smallest_size": Gauge(
+                name="fsa_smallest_size_bytes",
                 documentation="size of the SMALLEST file in the tree in bytes",
-                labelnames=["type", "pattern", "path", "name"],
+                labelnames=["type", "pattern", "path", "name", "parent"],
             ),
         }
-        """A dict of summary gauges, used to hold min / max details."""
+        """Summary gauges for oldest / newest / smallest / biggest details."""
 
         log.trace(f"Finished instantiating {self.__class__}.")
 
@@ -89,9 +109,9 @@ class FileSizeAgeMetrics:
             if not details:
                 continue
 
-            dirname, basename, ftype, size, age = details
-            g_size.labels(ftype, pattern, dirname, basename).set(size)
-            g_age.labels(ftype, pattern, dirname, basename).set(age)
+            dirname, basename, ftype, size, age, parent = details
+            g_size.labels(ftype, pattern, dirname, basename, parent).set(size)
+            g_age.labels(ftype, pattern, dirname, basename, parent).set(age)
             if newest is None or age < newest[4]:
                 newest = details
             if oldest is None or age > oldest[4]:
@@ -116,11 +136,15 @@ class FileSizeAgeMetrics:
         details : tuple
             The file details to use for updating the gauge.
         """
+        pattern = self._config.pattern
+
         # log.trace(f"Updating '{name}' summary gauge: {details}")
-        dirname, basename, ftype, size, age = details
-        value = age
-        if name in ["smallest", "biggest"]:
-            value = size
-        gauge = self.summary_gauges[name]
-        gauge.clear()
-        gauge.labels(ftype, self._config.pattern, dirname, basename).set(value)
+        dirname, basename, ftype, size, age, parent = details
+
+        gauge_size = self.summary_gauges[f"{name}_size"]
+        gauge_size.clear()
+        gauge_size.labels(ftype, pattern, dirname, basename, parent).set(size)
+
+        gauge_age = self.summary_gauges[f"{name}_age"]
+        gauge_age.clear()
+        gauge_age.labels(ftype, pattern, dirname, basename, parent).set(age)

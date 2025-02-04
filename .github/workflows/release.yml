@@ -28,7 +28,7 @@ jobs:
       uses: actions/cache@v4
       with:
         path: ~/.local
-        key: poetry-1.8.2-0
+        key: poetry-2.0.1-0
 
     # The key configuration value here is `virtualenvs-in-project: true`: this
     # creates the venv as a `.venv` in your testing directory, which allows
@@ -36,7 +36,7 @@ jobs:
     - name: 🔩🔧 Install 🎭 Poetry
       uses: snok/install-poetry@v1
       with:
-        version: 1.8.2
+        version: 2.0.1
         virtualenvs-create: true
         virtualenvs-in-project: true
 

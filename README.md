@@ -4,6 +4,8 @@
 
 [Prometheus][1] exporter providing size and age metrics about files.
 
+![FSA Metrics Grafana Demo Panel][fsa_panel]
+
 ## ⚙🔧 Installation ⚙🔧
 
 Example installation on Debian / Ubuntu:
@@ -43,7 +45,13 @@ The exporter running in foreground can be terminated as usual via `Ctrl+C`.
 
 ```bash
 adduser --system fsaexporter
-cp -v /opt/fsa-metrics/lib/python*/site-packages/resources/systemd/fsa-metrics.service  /etc/systemd/system/
+SITE_PKGS=$(/opt/fsa-metrics/bin/pip show file-size-age-metrics |
+    grep '^Location: ' |
+    cut -d ' ' -f 2
+)
+cp -v "$SITE_PKGS"/resources/systemd/fsa-metrics.service  /etc/systemd/system/
+cp -v "$SITE_PKGS"/resources/config-example.yaml  /etc/fsa-metrics.yaml
+vim /etc/fsa-metrics.yaml  # <- adapt settings to your requirements
 systemctl daemon-reload
 systemctl edit fsa-metrics.service
 ```
@@ -87,8 +95,42 @@ administrative privileges, running the exporter in kind of a
 absolutely feasible!
 
 The wrapper script assumes the `fsa-metrics` venv will be placed in
-`$HOME/.virtualenvs/`, if that's not the case the path prefix in the script
-requires to be adjusted.
+`$HOME/.venvs/`, if that's not the case the path prefix in the script requires
+to be adjusted.
+
+```bash
+mkdir -pv "$HOME/.venvs"
+VENV_PATH="$HOME/.venvs/fsa-metrics"
+python3 -m venv "$VENV_PATH"
+"$VENV_PATH/bin/pip" install --upgrade pip
+"$VENV_PATH/bin/pip" install file-size-age-metrics
+SITE_PKGS=$("$VENV_PATH/bin/pip" show file-size-age-metrics |
+    grep '^Location: ' |
+    cut -d ' ' -f 2
+)
+cp -v "$SITE_PKGS/resources/config-example.yaml" "$VENV_PATH/fsa-metrics.yaml"
+cp -v "$SITE_PKGS/resources/run-metrics-exporter.sh" "$VENV_PATH/bin/"
+```
+
+Obviously you also want to adapt the settings in the `.yaml` config file.
+
+Now the wrapper can be put into a cron-job (`crontab -e`) that e.g. executes
+once a minute and it will take care to only launch a new instance of the metrics
+exporter if none is running. For example:
+
+```cron
+* * * * *  $HOME/.venvs/fsa-metrics/bin/run-metrics-exporter.sh
+```
+
+## Visualization in Grafana
+
+To visualize data in a way as shown in the example panel above, queries like
+the following ones may be used:
+
+```text
+sort(fsa_age_seconds{instance="pg_server.example.xy"})
+sort(fsa_size_bytes{instance="pg_server.example.xy"})
+```
 
 ## Known limitations
 
@@ -111,3 +153,4 @@ demonstration purposes):
 
 [poetry]: https://python-poetry.org/
 [badge_poetry]: https://img.shields.io/endpoint?url=https://python-poetry.org/badge/v0.json
+[fsa_panel]: https://imcf.one/images/fsa-metrics-demo-panel.png

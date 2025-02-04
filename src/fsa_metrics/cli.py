@@ -18,8 +18,12 @@ def configure_logging(verbose: int):
     Parameters
     ----------
     verbose : int
-        Desired log level, 1: SUCCESS, 2: INFO, 3: DEBUG, >=4: TRACE.
+        Desired log level, 1: `SUCCESS`, 2: `INFO`, 3: `DEBUG`, >=4: `TRACE`.
+        In case the requested level is 0 (or smaller), nothing will be done
+        as loguru is already having the level set to `WARNING` by default.
     """
+    if verbose <= 0:
+        return
     verbose = verbose if verbose <= 4 else 4
     mapping = {1: "SUCCESS", 2: "INFO", 3: "DEBUG", 4: "TRACE"}
     log.remove()

@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VENV_PATH="$HOME/.virtualenvs/fsa-metrics"
+VENV_PATH="$HOME/.venvs/fsa-metrics"
 
 export FSA_CONFIG="$VENV_PATH/fsa-metrics.yaml"
 

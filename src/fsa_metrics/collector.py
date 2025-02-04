@@ -35,6 +35,7 @@ def get_file_details(filename):
         - The "file age", as in: the time since the last file modification.
     """
     dirname = os.path.dirname(filename)
+    parent_dir = os.path.basename(dirname)
     basename = os.path.basename(filename)
     file_type = "other"
 
@@ -51,7 +52,7 @@ def get_file_details(filename):
         log.warning(f"Unable to get details for [{filename}]: {err}")
         return None
 
-    return (dirname, basename, file_type, size, age)
+    return (dirname, basename, file_type, size, age, parent_dir)
 
 
 @COLLECTOR_TIME.time()
