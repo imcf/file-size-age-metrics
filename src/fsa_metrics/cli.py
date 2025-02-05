@@ -61,7 +61,6 @@ def run_fsa_exporter(conffile):
 
     start_http_server(config.port)
     log.success(f"Providing metrics via HTTP on port {config.port}.")
-    metrics = FileSizeAgeMetrics(config)
 
     info = Info(
         name="fsa_exporter",
@@ -74,6 +73,10 @@ def run_fsa_exporter(conffile):
         }
     )
 
+    metrics = []
+    for fsa_metric in config.fsa_metrics:
+        metrics.append(FileSizeAgeMetrics(fsa_metric.scan_dir, fsa_metric.pattern))
+
     log.success(
         f"{__package__} {__version__} started, "
         f"collection interval {config.interval}s."
@@ -82,7 +85,8 @@ def run_fsa_exporter(conffile):
     while True:
         log.trace("Updating gauges status...")
         try:
-            metrics.update_metrics()
+            for metric in metrics:
+                metric.update_metrics()
         except Exception as err:  # pylint: disable-msg=broad-except
             log.error(f"Updating metrics failed: {err}")
         sleep(config.interval)

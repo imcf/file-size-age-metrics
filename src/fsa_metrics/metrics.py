@@ -9,17 +9,22 @@ from .collector import FSACollector
 class FileSizeAgeMetrics:
     """Product metrics class."""
 
-    def __init__(self, config):
+    def __init__(self, fsa_dir, pattern):
         """FileSizeAgeMetrics constructor.
 
         Parameters
         ----------
-        config : box.Box
-            The config as returned by `fsa_metrics.config.load_config_file`.
+        fsa_dir : str
+            The top-level directory to scan files in.
+        pattern : str
+            The glob pattern to match names against.
         """
         log.trace(f"Instantiating {self.__class__}...")
-        self._config = config
-        self.collector = FSACollector(config)
+        self.fsa_dir: str = f"{fsa_dir}"
+        """Root of directory tree to scan."""
+        self.pattern: str = f"{pattern}"
+        """Pattern for matching filenames."""
+        self.collector = FSACollector(fsa_dir, pattern)
         """An `fsa_metrics.collector.FSACollector` used to collect metrics data."""
 
         self.detail_gauges = {
@@ -99,7 +104,7 @@ class FileSizeAgeMetrics:
 
         g_size = self.detail_gauges["size"]
         g_age = self.detail_gauges["age"]
-        pattern = self._config.pattern
+        pattern = self.pattern
 
         # not very elegant, potentially dangerous even - see the TODO in the collector
         # module about having details in a Box instead of a tuple...
@@ -136,7 +141,7 @@ class FileSizeAgeMetrics:
         details : tuple
             The file details to use for updating the gauge.
         """
-        pattern = self._config.pattern
+        pattern = self.pattern
 
         # log.trace(f"Updating '{name}' summary gauge: {details}")
         dirname, basename, ftype, size, age, parent = details

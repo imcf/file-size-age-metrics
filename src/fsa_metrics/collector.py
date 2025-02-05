@@ -82,21 +82,23 @@ def scan_files(path, pattern):
 class FSACollector:
     """Collector for file size and age data."""
 
-    def __init__(self, config):
+    def __init__(self, fsa_dir, pattern):
         """FSACollector constructor.
 
         Parameters
         ----------
-        config : box.Box
-            The config as returned by `fsa_metrics.config.load_config_file`.
+        fsa_dir : str
+            The top-level directory to scan files in.
+        pattern : str
+            The glob pattern to match names against.
         """
         log.trace(f"Instantiating {self.__class__}...")
-        self.fsa_dir: str = f"{config.fsa_dir}"
-        """The top-level directory to scan files in."""
-        self.pattern: str = f"{config.pattern}"
-        """The glob pattern to match names against."""
+        self.fsa_dir: str = f"{fsa_dir}"
+        """Root of directory tree to scan."""
+        self.pattern: str = f"{pattern}"
+        """Pattern for matching filenames."""
 
-        log.debug(f"Using FSA dir: [{self.fsa_dir}]")
+        log.debug(f"Settings: pattern=[{self.pattern}] dir=[{self.fsa_dir}]")
 
     def collect(self):
         """Scan the directory tree and collect the file metrics.
