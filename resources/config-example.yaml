@@ -9,4 +9,4 @@ fsa_metrics:
 - scan_dir: "/var/backups/"
   pattern: "**"
 - scan_dir: "/var/spool/"
-  pattern: "**"
+  pattern: "**/cron.*"

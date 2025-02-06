@@ -22,7 +22,7 @@ class FileSizeAgeMetrics:
         self.collectors = {}
         """A dict of `fsa_metrics.collector.FSACollector` for metrics collection."""
         for metrics in config.fsa_metrics:
-            ref = f"{metrics.scan_dir}::{metrics.pattern}"
+            ref = f"{metrics.scan_dir}://:{metrics.pattern}"
             self.collectors[ref] = FSACollector(metrics.scan_dir, metrics.pattern)
 
         self.detail_gauges = {
@@ -108,18 +108,21 @@ class FileSizeAgeMetrics:
 
         for ref, collector in self.collectors.items():
             try:
+                pattern = ref.split("://:")[1]
                 files_details = collector.collect()
-                self.set_values(files_details)
+                self.set_values(files_details, pattern)
             except Exception as err:  # pylint: disable-msg=broad-except
                 log.exception(f"Update on [{ref}] failed: {err}")
 
-    def set_values(self, details):
+    def set_values(self, details, pattern):
         """Feed the gauges with current metric values.
 
         Parameters
         ----------
         details : list
             The list of file details as collected by `FSACollector.collect()`.
+        pattern: str
+            The scan pattern that was used to produce the metrics.
         """
         if not details:
             return
@@ -127,15 +130,14 @@ class FileSizeAgeMetrics:
         all_details, extrema = details
         g_size = self.detail_gauges["size"]
         g_age = self.detail_gauges["age"]
-        pattern = self._config.pattern
 
         for dirname, basename, ftype, size, age, parent in all_details:
             g_size.labels(ftype, pattern, dirname, basename, parent).set(size)
             g_age.labels(ftype, pattern, dirname, basename, parent).set(age)
 
-        self.update_summary_metric(extrema)
+        self.update_summary_metric(extrema, pattern)
 
-    def update_summary_metric(self, extrema):
+    def update_summary_metric(self, extrema, pattern):
         """Helper method to update the various summary metrics gauges.
 
         Parameters
@@ -145,9 +147,9 @@ class FileSizeAgeMetrics:
             (described by the path and pattern), containing the details for the
             smallest, biggest, oldest and newest items. Given as the second
             element of the tuple returned by `collector.scan_files()`.
+        pattern: str
+            The scan pattern that was used to produce the metrics.
         """
-        pattern = self._config.pattern
-
         for name, details in extrema.items():
 
             # log.trace(f"Updating '{name}' summary gauge: {details}")
