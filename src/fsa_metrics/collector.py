@@ -40,6 +40,7 @@ def get_file_details(filename):
     basename = os.path.basename(filename)
     file_type = "other"
 
+    # TODO: figure out if this really triggers up to FIVE stat calls and reduce!
     try:
         if os.path.isfile(filename):
             file_type = "file"
