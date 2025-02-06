@@ -26,13 +26,14 @@ def get_file_details(filename):
 
     Returns
     -------
-    tuple(str, str, str, int, float)
+    tuple(str, str, str, int, float, str)
         A tuple with file details:
         - The directory name of the file.
         - The basename of the file.
         - The file type, one of `file`, `dir`, `link`, `other`.
         - The size of the file in bytes.
         - The "file age", as in: the time since the last file modification.
+        - The parent directory of the file.
     """
     dirname = os.path.dirname(filename)
     parent_dir = os.path.basename(dirname)
