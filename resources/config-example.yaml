@@ -3,9 +3,14 @@ port: 16061
 ### collector interval in seconds:
 interval: 60
 ### logging verbosity: 0=warning, 1=success, 2=info, 3=debug, 4=trace
-verbosity: 1
+verbosity: 4
 
-### root path to scan for files:
-fsa_dir: "/var/backups/"
-### pattern (python-glob) to match the filenames against:
-pattern: "**"
+### whether to include directories in the metrics data (NOTE: they can be quite
+### misleading by tainting the summary gauges, hence disabled by default):
+show_dirs: false
+
+fsa_metrics:
+- scan_dir: "/var/backups/"
+  pattern: "**"
+- scan_dir: "/var/spool/"
+  pattern: "**/cron.*"

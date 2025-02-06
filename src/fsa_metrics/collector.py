@@ -26,19 +26,21 @@ def get_file_details(filename):
 
     Returns
     -------
-    tuple(str, str, str, int, float)
+    tuple(str, str, str, int, float, str)
         A tuple with file details:
         - The directory name of the file.
         - The basename of the file.
         - The file type, one of `file`, `dir`, `link`, `other`.
         - The size of the file in bytes.
         - The "file age", as in: the time since the last file modification.
+        - The parent directory of the file.
     """
     dirname = os.path.dirname(filename)
     parent_dir = os.path.basename(dirname)
     basename = os.path.basename(filename)
     file_type = "other"
 
+    # TODO: figure out if this really triggers up to FIVE stat calls and reduce!
     try:
         if os.path.isfile(filename):
             file_type = "file"
@@ -68,35 +70,47 @@ def scan_files(path, pattern):
 
     Returns
     -------
-    list(tuple)
+    (list(tuple), dict)
+        A tuple containing a list with scanned file details as the first item
+        and a dict with the extrema as the second item.
     """
     log.trace(f"Scanning files at [{path}]...")
     files = glob(f"{path}/{pattern}", recursive=True)
     log.trace(f"Found {len(files)} files, fetching details...")
-    details = [get_file_details(filename) for filename in files]
-    log.debug(f"Scanned {len(details)} files.")
+    details_all = [get_file_details(filename) for filename in files]
+    if not details_all:
+        log.info(f"Couldn't find any matching files at [{path}]!")
+        return None
 
-    return details
+    log.debug(f"Scanned {len(details_all)} files.")
+
+    return details_all
 
 
 class FSACollector:
     """Collector for file size and age data."""
 
-    def __init__(self, config):
+    def __init__(self, fsa_dir, pattern, show_dirs=False):
         """FSACollector constructor.
 
         Parameters
         ----------
-        config : box.Box
-            The config as returned by `fsa_metrics.config.load_config_file`.
+        fsa_dir : str
+            The top-level directory to scan files in.
+        pattern : str
+            The glob pattern to match names against.
+        show_dirs : bool, optional
+            If `False` (default), directories will be excluded from the data.
         """
         log.trace(f"Instantiating {self.__class__}...")
-        self.fsa_dir: str = f"{config.fsa_dir}"
-        """The top-level directory to scan files in."""
-        self.pattern: str = f"{config.pattern}"
-        """The glob pattern to match names against."""
+        self.fsa_dir: str = f"{fsa_dir}"
+        """Root of directory tree to scan."""
+        self.pattern: str = f"{pattern}"
+        """Pattern for matching filenames."""
+        self.show_dirs = show_dirs
+        """Flag whether to include directories in collected data."""
 
-        log.debug(f"Using FSA dir: [{self.fsa_dir}]")
+        log.debug(f"Settings: pattern=[{self.pattern}] dir=[{self.fsa_dir}]")
 
     def collect(self):
         """Scan the directory tree and collect the file metrics.
@@ -114,7 +128,7 @@ class FSACollector:
         try:
             details = scan_files(self.fsa_dir, self.pattern)
         except Exception as err:  # pylint: disable-msg=broad-except
-            log.error(f"Failed scanning files: {err}")
-            return None
+            log.exception(f"Failed scanning files: {err}")
+            return []
 
         return details

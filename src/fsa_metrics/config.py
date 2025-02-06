@@ -22,23 +22,34 @@ def load_config_file(filename):
         - `port` (str): the TCP port where the metrics will be provided [16061]
         - `interval` (int) : the interval at which metrics are updated [60]
         - `verbosity` (int) : logging verbosity [0]
-        - `fsa_dir` (str) : the path to scan for files [`/var/backups`]
-        - `pattern` (str) : a glob pattern for matching filenames [`**`]
+        - `fsa_metrics` (list) : scan settings for one or more directory trees,
+          each item being a dict with the following keys:
+          - `scan_dir` : the path to scan for files [`/var/backups`]
+          - `pattern` (str) : a glob pattern for matching filenames [`**`]
     """
     if not filename:
         config = Box({})
     else:
         config = Box.from_yaml(filename=filename)
 
+    if "show_dirs" not in config.keys():
+        config.show_dirs = False
     if "port" not in config.keys():
         config.port = "16061"
-    if "fsa_dir" not in config.keys():
-        config.fsa_dir = "/var/backups"
-    if "pattern" not in config.keys():
-        config.pattern = "**"
     if "interval" not in config.keys():
         config.interval = 60
     if "verbosity" not in config.keys():
         config.verbosity = 0
+    if "fsa_metrics" not in config.keys():
+        config.fsa_metrics = [
+            {
+                "scan_dir": "/var/backups/",
+                "pattern": "**",
+            },
+            {
+                "scan_dir": "/var/spool/",
+                "pattern": "**",
+            },
+        ]
 
     return config
