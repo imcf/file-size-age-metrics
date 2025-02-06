@@ -84,7 +84,8 @@ Open ports for the `fsa-metrics` exporter:
 
 ```bash
 SOURCE="any"  # <-- put an IP address here to restrict access more
-ufw allow from $SOURCE to any port fsa-metrics
+PORT="16061"  # <-- adjust in case it's changed from this default value
+ufw allow from $SOURCE to any port $PORT
 ```
 
 ## 🪂 Running via cron ⏰
