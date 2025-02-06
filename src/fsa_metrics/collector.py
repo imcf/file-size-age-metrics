@@ -73,10 +73,32 @@ def scan_files(path, pattern):
     log.trace(f"Scanning files at [{path}]...")
     files = glob(f"{path}/{pattern}", recursive=True)
     log.trace(f"Found {len(files)} files, fetching details...")
-    details = [get_file_details(filename) for filename in files]
-    log.debug(f"Scanned {len(details)} files.")
+    details_all = [get_file_details(filename) for filename in files]
+    if not details_all:
+        log.info(f"Couldn't find any matching files at [{path}]!")
+        return None
 
-    return details
+    log.debug(f"Scanned {len(details_all)} files.")
+
+    newest = oldest = biggest = smallest = details_all[0]
+    for details in details_all:
+        if newest is None or details[4] < newest[4]:
+            newest = details
+        if oldest is None or details[4] > oldest[4]:
+            oldest = details
+        if biggest is None or details[3] > biggest[3]:
+            biggest = details
+        if smallest is None or details[3] < smallest[3]:
+            smallest = details
+
+    extrema = {
+        "newest": newest,
+        "oldest": oldest,
+        "biggest": biggest,
+        "smallest": smallest,
+    }
+
+    return details_all, extrema
 
 
 class FSACollector:

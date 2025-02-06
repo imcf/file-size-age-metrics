@@ -9,23 +9,21 @@ from .collector import FSACollector
 class FileSizeAgeMetrics:
     """Product metrics class."""
 
-    def __init__(self, fsa_dir, pattern):
+    def __init__(self, config):
         """FileSizeAgeMetrics constructor.
 
         Parameters
         ----------
-        fsa_dir : str
-            The top-level directory to scan files in.
-        pattern : str
-            The glob pattern to match names against.
+        config : box.Box
+            The config as returned by `fsa_metrics.config.load_config_file`.
         """
         log.trace(f"Instantiating {self.__class__}...")
-        self.fsa_dir: str = f"{fsa_dir}"
-        """Root of directory tree to scan."""
-        self.pattern: str = f"{pattern}"
-        """Pattern for matching filenames."""
-        self.collector = FSACollector(fsa_dir, pattern)
-        """An `fsa_metrics.collector.FSACollector` used to collect metrics data."""
+        self._config = config
+        self.collectors = {}
+        """A dict of `fsa_metrics.collector.FSACollector` for metrics collection."""
+        for metrics in config.fsa_metrics:
+            ref = f"{metrics.scan_dir}::{metrics.pattern}"
+            self.collectors[ref] = FSACollector(metrics.scan_dir, metrics.pattern)
 
         self.detail_gauges = {
             "size": Gauge(
@@ -87,69 +85,61 @@ class FileSizeAgeMetrics:
 
         log.trace(f"Finished instantiating {self.__class__}.")
 
-    def update_metrics(self):
-        """Call the metrics collector and process the result."""
-        log.debug("Updating metrics...")
-        try:
-            files_details = self.collector.collect()
-        except Exception as err:  # pylint: disable-msg=broad-except
-            raise RuntimeError(f"Fetching new data failed: {err}") from err
+    def clear_all_gauges(self):
+        """Clear all registered gauges to prepare them for the next round.
 
-        # this clearing is required as otherwise values from previous iterations
-        # that do not exist in the current run any more would still be around
-        # with their old value:
+        This is required as otherwise values from previous iterations (that do
+        not exist in the current run any) more would still be around with their
+        old value.
+        """
         for name, gauge in self.detail_gauges.items():
-            log.trace(f"Clearing labelsets for gauge {name}...")
+            log.trace(f"Clearing labelsets for details gauge {name}...")
             gauge.clear()
 
+        for name, gauge in self.summary_gauges.items():
+            log.trace(f"Clearing labelsets for summary gauge {name}...")
+            gauge.clear()
+
+    def update_all_metrics(self):
+        """Clear all gauges, collect metrics and set new gauge values."""
+        self.clear_all_gauges()
+
+        log.debug("Updating all metrics...")
+
+        for ref, collector in self.collectors.items():
+            try:
+                files_details = collector.collect()
+                self.set_values(files_details)
+            except Exception as err:  # pylint: disable-msg=broad-except
+                log.exception(f"Update on [{ref}] failed: {err}")
+
+    def set_values(self, details):
+        """Feed the gauges with current metric values."""
+        if not details:
+            return
+
+        all_details, extrema = details
         g_size = self.detail_gauges["size"]
         g_age = self.detail_gauges["age"]
-        pattern = self.pattern
+        pattern = self._config.pattern
 
-        # not very elegant, potentially dangerous even - see the TODO in the collector
-        # module about having details in a Box instead of a tuple...
-        newest = oldest = biggest = smallest = files_details[0]
-
-        for details in files_details:
-            if not details:
-                continue
-
-            dirname, basename, ftype, size, age, parent = details
+        for dirname, basename, ftype, size, age, parent in all_details:
             g_size.labels(ftype, pattern, dirname, basename, parent).set(size)
             g_age.labels(ftype, pattern, dirname, basename, parent).set(age)
-            if newest is None or age < newest[4]:
-                newest = details
-            if oldest is None or age > oldest[4]:
-                oldest = details
-            if biggest is None or size > biggest[3]:
-                biggest = details
-            if smallest is None or size < smallest[3]:
-                smallest = details
 
-        self.update_summary_metric("oldest", oldest)
-        self.update_summary_metric("newest", newest)
-        self.update_summary_metric("biggest", biggest)
-        self.update_summary_metric("smallest", smallest)
+        self.update_summary_metric(extrema)
 
-    def update_summary_metric(self, name, details):
-        """Helper method to update the various summary metrics gauges.
+    def update_summary_metric(self, extrema):
+        """Helper method to update the various summary metrics gauges."""
+        pattern = self._config.pattern
 
-        Parameters
-        ----------
-        name : str
-            The gauge name as stored in the `self.summary_gauges` dict.
-        details : tuple
-            The file details to use for updating the gauge.
-        """
-        pattern = self.pattern
+        for name, details in extrema.items():
 
-        # log.trace(f"Updating '{name}' summary gauge: {details}")
-        dirname, basename, ftype, size, age, parent = details
+            # log.trace(f"Updating '{name}' summary gauge: {details}")
+            dirname, basename, ftype, size, age, parent = details
 
-        gauge_size = self.summary_gauges[f"{name}_size"]
-        gauge_size.clear()
-        gauge_size.labels(ftype, pattern, dirname, basename, parent).set(size)
+            gauge_size = self.summary_gauges[f"{name}_size"]
+            gauge_size.labels(ftype, pattern, dirname, basename, parent).set(size)
 
-        gauge_age = self.summary_gauges[f"{name}_age"]
-        gauge_age.clear()
-        gauge_age.labels(ftype, pattern, dirname, basename, parent).set(age)
+            gauge_age = self.summary_gauges[f"{name}_age"]
+            gauge_age.labels(ftype, pattern, dirname, basename, parent).set(age)
