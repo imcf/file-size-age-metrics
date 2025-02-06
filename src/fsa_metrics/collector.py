@@ -117,6 +117,6 @@ class FSACollector:
             details = scan_files(self.fsa_dir, self.pattern)
         except Exception as err:  # pylint: disable-msg=broad-except
             log.error(f"Failed scanning files: {err}")
-            return None
+            return []
 
         return details
