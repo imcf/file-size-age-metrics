@@ -70,7 +70,9 @@ def scan_files(path, pattern):
 
     Returns
     -------
-    list(tuple)
+    (list(tuple), dict)
+        A tuple containing a list with scanned file details as the first item
+        and a dict with the extrema as the second item.
     """
     log.trace(f"Scanning files at [{path}]...")
     files = glob(f"{path}/{pattern}", recursive=True)

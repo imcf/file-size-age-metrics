@@ -114,7 +114,13 @@ class FileSizeAgeMetrics:
                 log.exception(f"Update on [{ref}] failed: {err}")
 
     def set_values(self, details):
-        """Feed the gauges with current metric values."""
+        """Feed the gauges with current metric values.
+
+        Parameters
+        ----------
+        details : list
+            The list of file details as collected by `FSACollector.collect()`.
+        """
         if not details:
             return
 
@@ -130,7 +136,16 @@ class FileSizeAgeMetrics:
         self.update_summary_metric(extrema)
 
     def update_summary_metric(self, extrema):
-        """Helper method to update the various summary metrics gauges."""
+        """Helper method to update the various summary metrics gauges.
+
+        Parameters
+        ----------
+        extrema : dict
+            The dict with extrema values of the current scan configuration
+            (described by the path and pattern), containing the details for the
+            smallest, biggest, oldest and newest items. Given as the second
+            element of the tuple returned by `collector.scan_files()`.
+        """
         pattern = self._config.pattern
 
         for name, details in extrema.items():
