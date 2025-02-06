@@ -22,8 +22,10 @@ def load_config_file(filename):
         - `port` (str): the TCP port where the metrics will be provided [16061]
         - `interval` (int) : the interval at which metrics are updated [60]
         - `verbosity` (int) : logging verbosity [0]
-        - `fsa_dir` (str) : the path to scan for files [`/var/backups`]
-        - `pattern` (str) : a glob pattern for matching filenames [`**`]
+        - `fsa_metrics` (list) : scan settings for one or more directory trees,
+          each item being a dict with the following keys:
+          - `scan_dir` : the path to scan for files [`/var/backups`]
+          - `pattern` (str) : a glob pattern for matching filenames [`**`]
     """
     if not filename:
         config = Box({})
