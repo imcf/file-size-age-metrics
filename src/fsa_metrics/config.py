@@ -32,6 +32,8 @@ def load_config_file(filename):
     else:
         config = Box.from_yaml(filename=filename)
 
+    if "show_dirs" not in config.keys():
+        config.show_dirs = False
     if "port" not in config.keys():
         config.port = "16061"
     if "interval" not in config.keys():

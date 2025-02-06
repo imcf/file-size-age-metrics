@@ -5,6 +5,10 @@ interval: 60
 ### logging verbosity: 0=warning, 1=success, 2=info, 3=debug, 4=trace
 verbosity: 4
 
+### whether to include directories in the metrics data (NOTE: they can be quite
+### misleading by tainting the summary gauges, hence disabled by default):
+show_dirs: false
+
 fsa_metrics:
 - scan_dir: "/var/backups/"
   pattern: "**"

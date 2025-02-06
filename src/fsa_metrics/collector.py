@@ -108,7 +108,7 @@ def scan_files(path, pattern):
 class FSACollector:
     """Collector for file size and age data."""
 
-    def __init__(self, fsa_dir, pattern):
+    def __init__(self, fsa_dir, pattern, show_dirs=False):
         """FSACollector constructor.
 
         Parameters
@@ -117,12 +117,16 @@ class FSACollector:
             The top-level directory to scan files in.
         pattern : str
             The glob pattern to match names against.
+        show_dirs : bool, optional
+            If `False` (default), directories will be excluded from the data.
         """
         log.trace(f"Instantiating {self.__class__}...")
         self.fsa_dir: str = f"{fsa_dir}"
         """Root of directory tree to scan."""
         self.pattern: str = f"{pattern}"
         """Pattern for matching filenames."""
+        self.show_dirs = show_dirs
+        """Flag whether to include directories in collected data."""
 
         log.debug(f"Settings: pattern=[{self.pattern}] dir=[{self.fsa_dir}]")
 

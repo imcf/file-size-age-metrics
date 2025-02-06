@@ -23,7 +23,9 @@ class FileSizeAgeMetrics:
         """A dict of `fsa_metrics.collector.FSACollector` for metrics collection."""
         for metrics in config.fsa_metrics:
             ref = f"{metrics.scan_dir}://:{metrics.pattern}"
-            self.collectors[ref] = FSACollector(metrics.scan_dir, metrics.pattern)
+            self.collectors[ref] = FSACollector(
+                metrics.scan_dir, metrics.pattern, config.show_dirs
+            )
 
         self.detail_gauges = {
             "size": Gauge(
@@ -132,6 +134,9 @@ class FileSizeAgeMetrics:
         g_age = self.detail_gauges["age"]
 
         for dirname, basename, ftype, size, age, parent in all_details:
+            if not self._config.show_dirs and ftype == "dir":
+                continue
+
             g_size.labels(ftype, pattern, dirname, basename, parent).set(size)
             g_age.labels(ftype, pattern, dirname, basename, parent).set(age)
 
