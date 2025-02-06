@@ -82,7 +82,7 @@ def run_fsa_exporter(conffile):
     while True:
         log.trace("Updating gauges status...")
         try:
-            metrics.update_metrics()
+            metrics.update_all_metrics()
         except Exception as err:  # pylint: disable-msg=broad-except
             log.error(f"Updating metrics failed: {err}")
         sleep(config.interval)
