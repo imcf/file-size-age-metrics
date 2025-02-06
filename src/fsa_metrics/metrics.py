@@ -129,16 +129,46 @@ class FileSizeAgeMetrics:
         if not details:
             return
 
-        all_details, extrema = details
         g_size = self.detail_gauges["size"]
         g_age = self.detail_gauges["age"]
 
-        for dirname, basename, ftype, size, age, parent in all_details:
+        newest = oldest = biggest = smallest = None
+
+        for cur_detail in details:
+            dirname, basename, ftype, size, age, parent = cur_detail
             if not self._config.show_dirs and ftype == "dir":
                 continue
 
             g_size.labels(ftype, pattern, dirname, basename, parent).set(size)
             g_age.labels(ftype, pattern, dirname, basename, parent).set(age)
+
+            # set current item if no extrema values have been recorded before
+            # (all items have been of type "dir" and "show_dirs" is `False`)
+            if newest is None:
+                newest = oldest = biggest = smallest = cur_detail
+
+            if cur_detail[4] < newest[4]:
+                newest = cur_detail
+            if cur_detail[4] > oldest[4]:
+                oldest = cur_detail
+            if cur_detail[3] > biggest[3]:
+                biggest = cur_detail
+            if cur_detail[3] < smallest[3]:
+                smallest = cur_detail
+
+        if newest is None:
+            log.warning(
+                f"No extrema could be found in {len(details)} records. "
+                "The tree contains only directories or is completely empty."
+            )
+            return
+
+        extrema = {
+            "newest": newest,
+            "oldest": oldest,
+            "biggest": biggest,
+            "smallest": smallest,
+        }
 
         self.update_summary_metric(extrema, pattern)
 
@@ -150,8 +180,7 @@ class FileSizeAgeMetrics:
         extrema : dict
             The dict with extrema values of the current scan configuration
             (described by the path and pattern), containing the details for the
-            smallest, biggest, oldest and newest items. Given as the second
-            element of the tuple returned by `collector.scan_files()`.
+            smallest, biggest, oldest and newest items.
         pattern: str
             The scan pattern that was used to produce the metrics.
         """

@@ -84,25 +84,7 @@ def scan_files(path, pattern):
 
     log.debug(f"Scanned {len(details_all)} files.")
 
-    newest = oldest = biggest = smallest = details_all[0]
-    for details in details_all:
-        if newest is None or details[4] < newest[4]:
-            newest = details
-        if oldest is None or details[4] > oldest[4]:
-            oldest = details
-        if biggest is None or details[3] > biggest[3]:
-            biggest = details
-        if smallest is None or details[3] < smallest[3]:
-            smallest = details
-
-    extrema = {
-        "newest": newest,
-        "oldest": oldest,
-        "biggest": biggest,
-        "smallest": smallest,
-    }
-
-    return details_all, extrema
+    return details_all
 
 
 class FSACollector:
