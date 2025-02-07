@@ -133,11 +133,6 @@ sort(fsa_age_seconds{instance="pg_server.example.xy"})
 sort(fsa_size_bytes{instance="pg_server.example.xy"})
 ```
 
-## Known limitations
-
-Currently only a single directory tree can be monitored. Adding support for
-monitoring several trees with a single process is planned though.
-
 ## Scalability and resource usage considerations
 
 The exporter is designed with code simplicity as a goal, it's *not* optimized
