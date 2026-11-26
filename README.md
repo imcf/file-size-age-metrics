@@ -133,6 +133,32 @@ sort(fsa_age_seconds{instance="pg_server.example.xy"})
 sort(fsa_size_bytes{instance="pg_server.example.xy"})
 ```
 
+## Alerting in Grafana
+
+Create an alert rule with two conditions (example for gitea dumps):
+
+`latest`
+
+```text
+fsa_size_bytes and on (instance,path,name,pattern)
+    bottomk(1, fsa_age_seconds{instance="host-a:16061",
+        parent="gitea", name=~"gitea-dump-.*.zip"})
+```
+
+`latest`
+
+```onebefore
+fsa_size_bytes and on (instance,path,name,pattern)
+    topk(1, bottomk(2, fsa_age_seconds{instance="host-a:16061",
+        parent="gitea", name=~"gitea-dump-.*.zip"}))
+```
+
+Then configure a *math-expression* to be used as a condition:
+
+```text
+$latest - $onebefore < -1024
+```
+
 ## Scalability and resource usage considerations
 
 The exporter is designed with code simplicity as a goal, it's *not* optimized
